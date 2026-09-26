@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: credit_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+  app:
+    build: .
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:postgres@db:5432/credit_platform
+      SESSION_SECRET: change-this-secret
+      LICENSE_STATUS: pending
+      JURISDICTION: HU
+      CARD_ISSUER_PROVIDER: demo
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+volumes:
+  pgdata:
